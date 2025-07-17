@@ -3,38 +3,49 @@ from sqlalchemy.orm import Session
 from typing import TypeVar, Generic, Type, List, Optional
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import NoResultFound
+import uuid
 
 T = TypeVar("T") 
 
 class BaseRepository(Generic[T]):
-    def __init__(self, db: Session, model: Type[T]):
-        self.db = db
+    def __init__(self, model: Type[T]):
         self.model = model
 
-    def create(self, data: dict) -> T:
+    def create(self, db: Session, data: dict) -> T:
         instance = self.model(**data)
-        self.db.add(instance)
-        self.db.commit()
-        self.db.refresh(instance)
+        db.add(instance)
+        db.commit()
+        db.refresh(instance)
+        
         return instance
 
-    def get_one(self, key: str, value: str | int) -> Optional[T]:
+    def get_one(self, db: Session, key: str, value: str | uuid.UUID) -> Optional[T]:
         stmt = select(self.model).where(getattr(self.model, key) == value)
-        result = self.db.execute(stmt).scalar_one_or_none()
+        result = db.execute(stmt).scalar_one_or_none()
+        
         return result
 
-    def get_many(self, key: str, value: str | int) -> List[T]:
+    def get_many(self, db: Session, key: str, value: str | uuid.UUID) -> List[T]:
         stmt = select(self.model).where(getattr(self.model, key) == value)
-        return self.db.execute(stmt).scalars().all()
+        
+        return db.execute(stmt).scalars().all()
 
-    def update(self, key: str, value: str | int, changes: dict) -> Optional[T]:
-        stmt = update(self.model).where(getattr(self.model, key) == value).values(**changes).returning(self.model)
-        result = self.db.execute(stmt)
-        self.db.commit()
-        return result.fetchone()
+    def update(self, db: Session,  key: str, value: str | uuid.UUID, changes: dict) -> Optional[T]:
+        stmt = update(self.model).where(getattr(self.model, key) == value).values(**changes).returning(*self.model.__table__.c)
+        result = db.execute(stmt)
+        db.commit()
+        updated_row = result.fetchone()
+        
+        updated_user = self.model(**updated_row._mapping)
+        return updated_user
 
-    def delete(self, key: str, value: str | int) -> Optional[T]:
-        stmt = delete(self.model).where(getattr(self.model, key) == value).returning(self.model)
-        result = self.db.execute(stmt)
-        self.db.commit()
-        return result.fetchone()
+    def delete(self, db: Session, key: str, value: str | uuid.UUID) -> Optional[T]:
+        stmt = delete(self.model).where(getattr(self.model, key) == value).returning(*self.model.__table__.c)
+        result = db.execute(stmt)
+        db.commit()
+        deleted_row = result.fetchone()
+        
+        
+        deleted_user = self.model(**deleted_row._mapping)
+        return deleted_user
+    

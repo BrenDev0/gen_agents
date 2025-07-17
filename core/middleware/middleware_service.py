@@ -2,15 +2,16 @@ import os
 import jwt
 from typing import Dict
 from fastapi import Request, HTTPException
-from core.services.webtoken_service import WebTokenService
+from core.services.http_service import HttpService
 from modules.users.users_service import UsersService
 from core.dependencies.container import Container
+from core.database.sessions import get_db_session
 
 
 class MiddlewareService:
-    def __init__(self, webtoken_service: WebTokenService):
+    def __init__(self, http_service: HttpService):
         self.TOKEN_KEY = os.getenv("TOKEN_KEY")
-        self.webtoken_service = webtoken_service
+        self.http_service = http_service
 
     def get_token_payload(self, request: Request):
         auth_header = request.headers.get("Authorization")
@@ -21,7 +22,7 @@ class MiddlewareService:
         token = auth_header.split(" ")[1]
 
         try:
-            payload = self.webtoken_service.decode_token(token=token)
+            payload = self.http_service.webtoken_service.decode_token(token=token)
 
             return payload
         except jwt.ExpiredSignatureError:
@@ -63,8 +64,14 @@ class MiddlewareService:
             if user_id is None:
                 raise HTTPException(status_code=401, detail="Invlalid token")
             
-            users_service: UsersService = Container.resolve("users_service") 
-            user = users_service.resource(whereCol="user_id", identifier=user_id)
+            db = next(get_db_session())
+            
+            user = self.http_service.request_validation_service.verify_resource(
+                service_key="users_service",
+                params={"db": db, "where_col": "user_id", "identifier": user_id},
+                not_found_message="Unauthorized",
+                status_code=403
+            )
 
             if user is None:
                 raise HTTPException(status_code=403, detail="Unauthorized")

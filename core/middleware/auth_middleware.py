@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 async def auth_middleware(request: Request):
     middleware_service: MiddlewareService = Container.resolve("middleware_service")
-    user = await middleware_service.auth(request)
+    user = middleware_service.auth(request)
 
     request.state.user = user
     return user
