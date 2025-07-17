@@ -7,6 +7,7 @@ import uuid
 class UserCreate(BaseModel):
     email: str
     password: str
+    code: int
 
 class UserResponse(BaseModel):
     userId: uuid.UUID
