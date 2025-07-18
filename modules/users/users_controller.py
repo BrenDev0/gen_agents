@@ -8,9 +8,9 @@ from sqlalchemy.orm import Session
 
 class UsersController:
     def __init__(self, https_service: HttpService, users_service: UsersService):
-        self.http_service: HttpService = https_service
-        self.users_service = users_service
-        self.module = "users.controller"
+        self._http_service: HttpService = https_service
+        self._users_service = users_service
+        self._module = "users.controller"
 
     def create_request(self, request: Request, db: Session, new_user: UserCreate):
         verification_code = request.state.verification_code
@@ -18,8 +18,8 @@ class UsersController:
         if new_user.code != verification_code:
             raise HTTPException(status_code=403, detail="Incorrect verification code")
         
-        hashed_password = self.http_service.hashing_service.hash_password(password=new_user.password)
-        hashed_email = self.http_service.hashing_service.hash_for_search(data=new_user.email)
+        hashed_password = self._http_service.hashing_service.hash_password(password=new_user.password)
+        hashed_email = self._http_service.hashing_service.hash_for_search(data=new_user.email)
 
         user_data = {
             **new_user.model_dump(),
@@ -27,7 +27,7 @@ class UsersController:
             "email_hash": hashed_email
         }
         
-        self.users_service.create(db=db, user=user_data)
+        self._users_service.create(db=db, user=user_data)
         
         return {"detail": "User created"}
     
@@ -36,7 +36,7 @@ class UsersController:
     def resource_request(self, request: Request):
         user: User = request.state.user
 
-        data = self.users_service.map_from_db(user=user)
+        data = self._users_service.map_from_db(user=user)
         
         return data
         
@@ -44,11 +44,11 @@ class UsersController:
     def update_request(self, request: Request, db: Session, data: UserUpdate):
         user: User = request.state.user 
 
-        self.http_service.hashing_service.compare_password(data.oldPassword, user.password)
-        hashed_password = self.http_service.hashing_service.hash_password(data.newPassword)
+        self._http_service.hashing_service.compare_password(data.oldPassword, user.password)
+        hashed_password = self._http_service.hashing_service.hash_password(data.newPassword)
     
 
-        self.users_service.update(
+        self._users_service.update(
             db=db,
             user_id=user.user_id, 
             changes={"password": hashed_password}
@@ -59,7 +59,7 @@ class UsersController:
     def delete_request(self, request: Request, db: Session):
         user: User = request.state.user
 
-        self.users_service.delete(
+        self._users_service.delete(
             db=db,
             user_id=user.user_id
         )
@@ -67,17 +67,17 @@ class UsersController:
         return {"detail": "User deleted"}
     
     def login(self, request: Request, db: Session, data: UserLogin): 
-        hashed_email = self.http_service.hashing_service.hash_for_search(data=data.email)
+        hashed_email = self._http_service.hashing_service.hash_for_search(data=data.email)
         
-        user: User = self.http_service.request_validation_service.verify_resource(
+        user: User = self._http_service.request_validation_service.verify_resource(
             service_key="users_service",
             params={"db": db, "where_col": "email_hash", "identifier": hashed_email},
             not_found_message="User not found",
         )
 
-        self.http_service.hashing_service.compare_password(data.password, user.password)
+        self._http_service.hashing_service.compare_password(data.password, user.password)
 
-        token = self.http_service.webtoken_service.generate_token({
+        token = self._http_service.webtoken_service.generate_token({
             "user_id": str(user.user_id)
         }, "7d")
 

@@ -7,31 +7,32 @@ from core.logs.logger import Logger
 from typing import Dict, Any
 from sqlalchemy.orm import Session
 from uuid import UUID
-from core.services.base_service import BaseService
+from core.decorators.service_error_handler import service_error_handler
 
-class UsersService(BaseService): 
+class UsersService():
+    _MODULE = "users.service" 
     def __init__(self, logger: Logger, repository: BaseRepository):
-        super().__init__(logger=logger, module="users.service")
-        self.repository = repository
+        self._repository = repository
+        self._logger = logger
 
+    @service_error_handler(module=_MODULE)
     def create(self, db: Session, user: UserPrivate) -> UserPublic:
-        return self.execute_with_handling("create", lambda: self.repository.create(db, self.map_to_db(user)))
+        return self._repository.create(db, self.__map_to_db(user))
 
+    @service_error_handler(module=_MODULE)
     def resource(self, db: Session, where_col: str, identifier: str | UUID) -> User | None:
-        return self.execute_with_handling("resource", lambda: self.repository.get_one(db, where_col, identifier))
+        return self._repository.get_one(db, where_col, identifier)
 
+    @service_error_handler("users.service")
     def update(self, db: Session, user_id: UUID, changes: UserUpdate) -> UserPublic:
-        return self.execute_with_handling("update", lambda: self.map_from_db(
-            self.repository.update(db, key="user_id", value=user_id, changes=changes)
-        ))
+        return self.map_from_db(self._repository.update(db, key="user_id", value=user_id, changes=changes))
 
+    @service_error_handler(module=_MODULE)
     def delete(self, db: Session, user_id: UUID) -> UserPublic:
-        return self.execute_with_handling("delete", lambda: self.map_from_db(
-            self.repository.delete(db, key="user_id", value=user_id)
-        ))
+        return self.map_from_db(self._repository.delete(db, key="user_id", value=user_id))
 
     @staticmethod
-    def map_to_db(user: UserPrivate) -> User:
+    def __map_to_db(user: UserPrivate) -> User:
         encryption_service: EncryptionService = Container.resolve("encryption_service")
         return User(
             email=encryption_service.encrypt(user["email"]),

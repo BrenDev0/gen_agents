@@ -5,37 +5,43 @@ from core.logs.logger import Logger
 from typing import Dict, Any, List
 from sqlalchemy.orm import Session
 from uuid import UUID
-from core.services.base_service import BaseService
+from core.decorators.service_error_handler import service_error_handler
 
-class AgentsService(BaseService):
+class AgentsService():
+    _MODULE = "agents.service"
     def __init__(self, logger: Logger, repository: BaseRepository):
-        super().__init__(logger=logger, module="agents.service")
-        self.repository: BaseRepository = repository
+        self._repository: BaseRepository = repository
+        self._logger = logger
 
+    @service_error_handler(module=_MODULE)
     def create(self, db: Session,  agent: AgentPrivate) -> AgentPublic:
-        return self.execute_with_handling("create", lambda: self.map_from_db(self.repository.create(db=db, data=self.map_to_db(agent))))
+        return self.__map_from_db(self._repository.create(db=db, data=self.__map_to_db(agent)))
 
+    @service_error_handler(module=_MODULE)
     def resource(self, db: Session, agent_id: UUID) -> AgentPublic | None:
-        result = self.repository.get_one(db=db, key="agent_id", value=agent_id)
+        result = self._repository.get_one(db=db, key="agent_id", value=agent_id)
         if result is None:
             return None
-        return self.map_from_db(result)
+        return self.__map_from_db(result)
     
+    @service_error_handler(module=_MODULE)
     def collection(self, db: Session, user_id: UUID) -> List[AgentPublic]:
-        result = self.execute_with_handling("collection", lambda: self.repository.get_many(db=db, key="user_id", value=user_id))
+        result = self._repository.get_many(db=db, key="user_id", value=user_id)
 
         if len(result) != 0:
-            return [self.map_from_db(agent).model_dump() for agent in result]
+            return [self.__map_from_db(agent).model_dump() for agent in result]
         return []
     
+    @service_error_handler(module=_MODULE)
     def update(self, db: Session, agent_id: UUID, changes: Dict[str, Any]) -> AgentPublic:
-        return self.execute_with_handling("update", lambda: self.map_from_db(self.repository.update(key="agent_id", value=agent_id, changes=changes)))
+        return self.__map_from_db(self._repository.update(key="agent_id", value=agent_id, changes=changes))
 
+    @service_error_handler(module=_MODULE)
     def delete(self, db: Session, agent_id: UUID)-> AgentPublic:
-        return self.execute_with_handling("delete", lambda: self.map_from_db(self.repository.delete(db=db, key="agent_id", value=agent_id)))
+        return self.__map_from_db(self._repository.delete(db=db, key="agent_id", value=agent_id))
     
     @staticmethod
-    def map_to_db(agent: AgentPrivate) -> Agent:
+    def __map_to_db(agent: AgentPrivate) -> Agent:
         return Agent(
             user_id=agent["userId"], 
             agent_name=agent.agentName,
@@ -43,7 +49,7 @@ class AgentsService(BaseService):
         )
     
     @staticmethod
-    def map_from_db(agent: Agent) -> AgentPublic:
+    def __map_from_db(agent: Agent) -> AgentPublic:
         return AgentPublic(
             agentId=agent.agent_id,
             userId=agent.user_id,
