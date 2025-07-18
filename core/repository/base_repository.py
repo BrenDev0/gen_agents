@@ -11,13 +11,12 @@ class BaseRepository(Generic[T]):
     def __init__(self, model: Type[T]):
         self.model = model
 
-    def create(self, db: Session, data: dict) -> T:
-        instance = self.model(**data)
-        db.add(instance)
+    def create(self, db: Session, data: T) -> T:
+        db.add(data)
         db.commit()
-        db.refresh(instance)
+        db.refresh(data)
         
-        return instance
+        return data
 
     def get_one(self, db: Session, key: str, value: str | uuid.UUID) -> Optional[T]:
         stmt = select(self.model).where(getattr(self.model, key) == value)

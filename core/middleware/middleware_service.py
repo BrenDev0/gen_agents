@@ -6,8 +6,11 @@ from core.services.http_service import HttpService
 from modules.users.users_service import UsersService
 from core.dependencies.container import Container
 from core.database.sessions import get_db_session
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 
+
+security = HTTPBearer()
 class MiddlewareService:
     def __init__(self, http_service: HttpService):
         self.TOKEN_KEY = os.getenv("TOKEN_KEY")

@@ -1,13 +1,14 @@
 from pydantic import BaseModel
-from typing import List, Any
+from typing import List, Any, Optional
 from sqlalchemy import Column, String, Text, ForeignKey, Integer, Float
-from sqlalchemy.ext.declarative import declarative_base
-from modules.agents.state import State
-
+from sqlalchemy.orm import relationship
+from core.database.db_models import Base
+import uuid
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class InteractionRequest(BaseModel):
-    conversation_id: str
+    conversationiId: str
 
 class LLMConfig(BaseModel):
     prompt: str;
@@ -15,15 +16,29 @@ class LLMConfig(BaseModel):
     max_tokens: int;
     temperature: float
 
+class AgentCreate(BaseModel):
+    agentName: str
+    agentDescription: Optional[str]
 
-# db 
+class AgentPublic(BaseModel):
+    agentId: str
+    userId: str
+    agentName: str
+    agentDescription: Optional[str]
 
-Base = declarative_base()
+class AgentUpdate(BaseModel):
+    agentName: Optional[str]
+    agentDescription: Optional[str]
 
-class AgentConfig(Base):
-    __tablename__ = 'ai_config'
-    ai_config_id = Column(String, primary_key=True)
-    agent_id = Column(String, ForeignKey('agents.agent_id'))
-    system_prompt = Column(Text)
-    max_tokens = Column(Integer)
-    temperature = Column(Float)
+class AgentPrivate(BaseModel):
+    user_id: str
+    agentName: str
+    agentDescription: Optional[str]
+
+
+class Agent(Base):
+    __tablename__ = "agents"
+    agent_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
+    agent_name = Column(Text, nullable=False)
+    agent_description = Column(Text, nullable=True)

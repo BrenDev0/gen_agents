@@ -1,8 +1,10 @@
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import Column, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from core.database.db_models import Base 
 import uuid
+
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -38,3 +40,4 @@ class User(Base):
     email = Column(String, unique=True, nullable=False, index=True)
     email_hash = Column(String, unique=True, nullable=False, index=True)
     password = Column(String, nullable=False)
+

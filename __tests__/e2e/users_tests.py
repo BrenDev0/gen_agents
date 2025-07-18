@@ -14,7 +14,7 @@ delete_token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOTEwMDA0YWUt
 # def test_create_user_verified_success():
 #     with TestClient(app) as client:
 #         payload = {
-#             "email": "user@example.com",
+#             "email": "user333333@example.com",
 #             "password": "password123",
 #             "code": "123456" 
 #         }
@@ -24,7 +24,7 @@ delete_token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOTEwMDA0YWUt
 #             json=payload
 #         )
 #         assert res.status_code == 201
-#         assert res.json()["message"] == "User created"
+#         assert res.json()["detail"] == "User created"
 
 
 def test_create_user_verified_invalid_code():

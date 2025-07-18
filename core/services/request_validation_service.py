@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from typing import List, Dict, Any
 from core.dependencies.container import Container
 from sqlalchemy.orm import Session
+import uuid
 
 class RequestValidationService:
     def validate_uuid(self, uuid_str: str):
@@ -26,3 +27,7 @@ class RequestValidationService:
             raise HTTPException(status_code=status_code, detail=not_found_message)
         
         return result
+    
+    def validate_action_authorization(id: uuid.UUID, resource_id: uuid.UUID):
+        if id != resource_id:
+            raise HTTPException(status_code=403, detail="Forbidden")

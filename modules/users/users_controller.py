@@ -29,12 +29,7 @@ class UsersController:
         
         self.users_service.create(db=db, user=user_data)
         
-        return JSONResponse(status_code=201, 
-            content={
-                "detail": "User created"
-            }
-        );
- 
+        return {"detail": "User created"}
     
 
     
@@ -43,11 +38,7 @@ class UsersController:
 
         data = self.users_service.map_from_db(user=user)
         
-        return JSONResponse(status_code=200, 
-            content={
-                "data": data
-            }
-        );
+        return data
         
 
     def update_request(self, request: Request, db: Session, data: UserUpdate):
@@ -63,10 +54,7 @@ class UsersController:
             changes={"password": hashed_password}
         )
 
-        return JSONResponse(
-            status_code=200,
-            content={"detail": "User updated"}
-        )
+        return {"detail": "User updated"}
 
     def delete_request(self, request: Request, db: Session):
         user: User = request.state.user
@@ -76,12 +64,7 @@ class UsersController:
             user_id=user.user_id
         )
 
-        return JSONResponse(
-            status_code=200,
-            content={
-                "detail": "User deleted"
-            }
-        )
+        return {"detail": "User deleted"}
     
     def login(self, request: Request, db: Session, data: UserLogin): 
         hashed_email = self.http_service.hashing_service.hash_for_search(data=data.email)
@@ -98,8 +81,5 @@ class UsersController:
             "user_id": str(user.user_id)
         }, "7d")
 
-        return JSONResponse(
-            status_code=200,
-            content={"token": token}
-        )
+        return {"token": token}
 
