@@ -3,3 +3,5 @@ __dev__.py
 venv/
 
 .env
+
+__dev__
