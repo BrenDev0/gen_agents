@@ -3,7 +3,7 @@ from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplat
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from typing import List, Dict, Any
 from modules.embeddings.embedding_service import EmbeddingService
-from modules.agents.state import State
+from modules.langgraph.state import State
 from core.dependencies.container import Container
 
 

@@ -1,10 +1,10 @@
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, END
-from modules.agents.nodes.classify_intent import classify_intent
-from modules.agents.nodes.general_query import general_query
-from modules.agents.nodes.appointments import appointment_flow
-from modules.agents.nodes.agent_handoff import agent_handoff
-from modules.agents.state import State
+from modules.langgraph.nodes.classify_intent import classify_intent
+from modules.langgraph.nodes.general_query import general_query
+from modules.langgraph.nodes.appointments import appointment_flow
+from modules.langgraph.nodes.agent_handoff import agent_handoff
+from modules.langgraph.state import State
 
 def create_graph(llm: ChatOpenAI):
     graph = StateGraph(State)

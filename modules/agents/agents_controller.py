@@ -57,7 +57,7 @@ class AgentsController:
 
         self._http_service.request_validation_service.validate_action_authorization(user.user_id, agent_resource.userId)
 
-        self.agents_service.update(db=db, agent_id=agent_resource.agentId, changes=data.model_dump())
+        self._agents_service.update(db=db, agent_id=agent_resource.agentId, changes=data.model_dump())
 
         return {"detail", "Agent updated"}
     
