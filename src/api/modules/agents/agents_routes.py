@@ -42,7 +42,7 @@ def secure_create(
     """
     ## create request 
 
-    # this endpoint creates an agent in the db
+    this endpoint creates an agent in the db
     **Required fields** - agentName
     **Optional fields** - agentDescription
     """
@@ -60,7 +60,7 @@ def secure_resource(
     """
     ## Resource request 
 
-    # this endpoint gets a single agent from the db by agentId in the params
+    this endpoint gets a single agent from the db by agentId in the params
     """
     return controller.resource_request(request=request, db=db, agent_id=agent_id)
 
@@ -75,7 +75,7 @@ def secure_collection(
     """
     ## Collection request 
 
-    # this endpoint returns a collection of agents based on the user id passed in the token   
+    this endpoint returns a collection of agents based on the user id passed in the token   
     """
     return controller.collection_request(request=request, db=db)
 
@@ -92,7 +92,7 @@ def secure_update(
     """
     ## Update request
 
-    # this endpoint updates the agents name or description
+    this endpoint updates the agents name or description
     """
     return controller.update_request(request=request, db=db, data=data, agent_id=agent_id)
 
@@ -108,7 +108,7 @@ def secure_delete(
     """
     ## Delete request
 
-    # this endpoint deletes an agent by id
+    this endpoint deletes an agent by id
     """
     return controller.delete_request(request=request, db=db, agent_id=agent_id)
     

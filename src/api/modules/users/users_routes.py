@@ -30,7 +30,7 @@ def verified_create(
     """
     ## Create user 
 
-    # this endpoint creates a user a verification codemust be passed from users email
+    this endpoint creates a user a verification codemust be passed from users email
     """
     return controller.create_request(request=request, db=db, data=data)
 
@@ -44,7 +44,7 @@ def secure_resource(
     """
     ## Resource request
 
-    # this endpoint gets the current user
+    this endpoint gets the current user
     """
     return controller.resource_request(request=request)
 
@@ -60,7 +60,7 @@ def secure_update(
     """
     ## Update request
 
-    # this endpoint updates the current users password
+    this endpoint updates the current users password
     """
     return controller.update_request(request=request, db=db, data=data)
 
@@ -74,7 +74,7 @@ def secure_delete(
     """
     ## Delete request
 
-    # Deletes the current user
+    Deletes the current user
     """
     return controller.delete_request(request=request, db=db)
 
