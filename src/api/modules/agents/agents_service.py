@@ -13,9 +13,9 @@ class AgentsService():
         self._logger = logger
 
     @service_error_handler(module=_MODULE)
-    def create(self, db: Session,  agent: List[Dict], user_id: UUID) -> Agent:
+    def create(self, db: Session,  agent: AgentCreate, user_id: UUID) -> Agent:
         new_agent = Agent(
-            **agent,
+            **agent.model_dump(by_alias=False),
             user_id = user_id
         )
         return self._repository.create(db=db, data=new_agent)
@@ -36,8 +36,8 @@ class AgentsService():
         return []
     
     @service_error_handler(module=_MODULE)
-    def update(self, db: Session, agent_id: UUID, changes: Dict[str, Any]) -> Agent:
-        return self._repository.update(key="agent_id", value=agent_id, changes=changes)
+    def update(self, db: Session, agent_id: UUID, changes: AgentUpdate) -> Agent:
+        return self._repository.update(db=db, key="agent_id", value=agent_id, changes=changes.model_dump(by_alias=False))
 
     @service_error_handler(module=_MODULE)
     def delete(self, db: Session, agent_id: UUID)-> Agent:

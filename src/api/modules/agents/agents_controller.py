@@ -13,6 +13,7 @@ class AgentsController:
         self._http_service = http_service
         self._agents_service = agents_service
 
+
     def create_request(self, requset: Request, db: Session, data: AgentCreate) -> GeneralResponse:
         user: User = requset.state.user
 
@@ -22,6 +23,7 @@ class AgentsController:
             detail="Agent created"
         )
     
+
     def resource_request(self, request: Request, db: Session, agent_id: uuid.UUID) -> AgentPublic:
         user: User = request.state.user
 
@@ -31,10 +33,11 @@ class AgentsController:
             "Agent not found"
         )
 
-        self._http_service.request_validation_service.validate_action_authorization(user.user_id, agent_resource.userId)
+        self._http_service.request_validation_service.validate_action_authorization(user.user_id, agent_resource.user_id)
 
         return self.__to_public(agent_resource)
     
+
     def collection_request(self, request: Request, db: Session) -> List[AgentPublic]:
         user: User = request.state.user
 
@@ -42,6 +45,7 @@ class AgentsController:
 
         return [self.__to_public(agent) for agent in data]
     
+
     def update_request(self, request: Request, db: Session, data: AgentUpdate, agent_id: uuid.UUID) -> GeneralResponse:
         user: User = request.state.user
 
@@ -51,14 +55,15 @@ class AgentsController:
             "Agent not found"
         )
 
-        self._http_service.request_validation_service.validate_action_authorization(user.user_id, agent_resource.userId)
-
-        self._agents_service.update(db=db, agent_id=agent_resource.agentId, changes=data.model_dump())
+        self._http_service.request_validation_service.validate_action_authorization(user.user_id, agent_resource.user_id)
+    
+        self._agents_service.update(db=db, agent_id=agent_resource.agent_id, changes=data)
 
         return GeneralResponse(
             detail="Agent updated"
         )
     
+
     def delete_request(self, request: Request, db: Session, agent_id: uuid.UUID) -> GeneralResponse:
         user: User = request.state.user
 
@@ -68,14 +73,15 @@ class AgentsController:
             "Agent not found"
         )
 
-        self._http_service.request_validation_service.validate_action_authorization(user.user_id, agent_resource.userId)
+        self._http_service.request_validation_service.validate_action_authorization(user.user_id, agent_resource.user_id)
 
-        self._agents_service.delete(db=db, agent_id=agent_resource.agentId)
+        self._agents_service.delete(db=db, agent_id=agent_resource.agent_id)
 
         return GeneralResponse(
             detail="Agent deleted"
         )
     
+
     @staticmethod
     def __to_public(agent: Agent) -> AgentPublic:
         return AgentPublic.model_validate(agent, from_attributes=True)

@@ -11,6 +11,7 @@ from src.agent.services.embedding_service import EmbeddingService
 from src.agent.services.prompt_service import PromptService
 from src.api.modules.messaging.messaging_dependencies import configure_messaging_dependencies
 from src.api.modules.users.user_dependencies import configure_users_dependencies
+from src.api.modules.agents.agents_dependencies import configure_agents_dependencies
 
 def configure_container():
     ## core ##
@@ -62,6 +63,9 @@ def configure_container():
 
     ## Modules ## Must configure core instances above this line ##
 
+    # agents 
+    configure_agents_dependencies(logger=logger)
+    
     # messaging
     configure_messaging_dependencies()
 

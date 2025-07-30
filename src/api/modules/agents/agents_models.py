@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, PrivateAttr
-from pydantic.alias_generators import to_camel, to_snake
+from pydantic.alias_generators import to_camel
 from typing import List, Any, Optional
 from sqlalchemy import Column, Text, ForeignKey
 from src.api.core.database.db_models import Base
@@ -14,8 +14,7 @@ class InteractionRequest(BaseModel):
         populate_by_name=True,
         from_attributes=True,
         serialize_by_alias=True,
-        alias_generator=to_snake,
-        schema_generator=to_camel
+        alias_generator=to_camel
     )
 
 
@@ -34,13 +33,12 @@ class AgentCreate(BaseModel):
         populate_by_name=True,
         from_attributes=True,
         serialize_by_alias=True,
-        alias_generator=to_camel,
-        schema_generator=to_camel
+        alias_generator=to_camel
     )
 
 class AgentPublic(BaseModel):
-    agent_id: str
-    user_id: str
+    agent_id: uuid.UUID
+    user_id: uuid.UUID
     agent_name: str
     agent_description: Optional[str]
 
@@ -48,8 +46,7 @@ class AgentPublic(BaseModel):
         populate_by_name=True,
         from_attributes=True,
         serialize_by_alias=True,
-        alias_generator=to_camel,
-        schema_generator=to_camel
+        alias_generator=to_camel
     )
 
 class AgentUpdate(BaseModel):
@@ -60,8 +57,7 @@ class AgentUpdate(BaseModel):
         populate_by_name=True,
         from_attributes=True,
         serialize_by_alias=True,
-        alias_generator=to_snake,
-        schema_generator=to_camel
+        alias_generator=to_camel
     )
 
 
