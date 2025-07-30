@@ -33,7 +33,7 @@ def get_graph():
 
 @router.post("/secure/create", status_code=201, response_model=GeneralResponse)
 def secure_create(
-    requset: Request,
+    request: Request,
     _=Depends(auth_middleware),
     db: Session = Depends(get_db_session),
     controller: AgentsController = Depends(get_controller),
@@ -46,7 +46,7 @@ def secure_create(
     - **Required fields** - agentName
     - **Optional fields** - agentDescription
     """
-    return controller.create_request(requset=requset, db=db, data=data)
+    return controller.create_request(requset=request, db=db, data=data)
 
 
 @router.get("/secure/resource/{agent_id}", status_code=200, response_model=AgentPublic)

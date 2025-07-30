@@ -20,8 +20,8 @@ class AgentsController:
         self._agents_service = agents_service
 
 
-    def create_request(self, requset: Request, db: Session, data: AgentCreate) -> GeneralResponse:
-        user: User = requset.state.user
+    def create_request(self, request: Request, db: Session, data: AgentCreate) -> GeneralResponse:
+        user: User = request.state.user
 
         self._agents_service.create(db=db, agent=data, user_id=user.user_id)
 
