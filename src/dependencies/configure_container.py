@@ -9,7 +9,8 @@ from src.api.core.services.request_validation_service import RequestValidationSe
 from src.api.core.services.http_service import HttpService
 from src.agent.services.embedding_service import EmbeddingService
 from src.agent.services.prompt_service import PromptService
-from src.api.modules.messaging.messaging_dependencies import configure_messaging_dependencies
+from src.api.modules.chats.chats_dependencies import configure_chats_dependencies
+from src.api.modules.chats.messages.messages_dependencies import configure_messages_dependencies
 from src.api.modules.users.user_dependencies import configure_users_dependencies
 from src.api.modules.agents.agents_dependencies import configure_agents_dependencies
 
@@ -64,13 +65,16 @@ def configure_container():
     ## Modules ## Must configure core instances above this line ##
 
     # agents 
-    configure_agents_dependencies(logger=logger)
+    configure_agents_dependencies(logger=logger, http_service=http_service)
     
-    # messaging
-    configure_messaging_dependencies()
+    # chats
+    configure_chats_dependencies(logger=logger, http_service=http_service)
+    
+    # messages
+    configure_messages_dependencies(logger=logger, http_service=http_service)
 
     # users 
-    configure_users_dependencies(logger=logger)
+    configure_users_dependencies(logger=logger, http_service=http_service)
 
 
 

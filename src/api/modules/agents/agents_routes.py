@@ -5,7 +5,7 @@ from src.api.core.middleware.auth_middleware import auth_middleware
 from sqlalchemy.orm import Session
 from src.api.core.database.sessions import get_db_session
 from src.api.modules.agents.agents_models import AgentCreate, AgentUpdate, AgentPublic
-from src.api.core.models.http_reposnses import GeneralResponse
+from src.api.core.models.http_responses import GeneralResponse
 from src.api.modules.agents.agents_controller import AgentsController
 import uuid
 from src.api.core.middleware.middleware_service import security

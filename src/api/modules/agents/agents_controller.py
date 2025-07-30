@@ -1,7 +1,13 @@
 from src.api.modules.agents.agents_service import AgentsService
-from src.api.modules.agents.agents_models import AgentPublic, AgentCreate, AgentUpdate, Agent
-from src.api.core.models.http_reposnses import GeneralResponse
-from fastapi import Request
+from src.api.modules.agents.agents_models import AgentPublic, AgentCreate, AgentUpdate, Agent, InteractionRequest
+from  src.api.modules.chats.messages.messages_service import MessagesService
+from src.api.modules.chats.messages.messages_models import Message
+from src.dependencies.container import Container
+from src.api.modules.chats.chats_models import Chat
+from src.api.core.services.redis_service import RedisService
+from src.api.core.models.http_responses import GeneralResponse
+from src.agent.state import State
+from fastapi import Request, BackgroundTasks
 from src.api.core.services.http_service import HttpService
 from sqlalchemy.orm import Session
 from src.api.modules.users.users_models import User
@@ -81,6 +87,41 @@ class AgentsController:
             detail="Agent deleted"
         )
     
+    
+    async def interact(
+        self, 
+        request: Request, 
+        db: Session, 
+        graph, 
+        chat_id: uuid.UUID, 
+        data: InteractionRequest, 
+        background_tasks: BackgroundTasks
+    ):
+        user: User = request.state.user
+
+        chat_resource: Chat = self._http_service.request_validation_service.verify_resource(
+            service_key="chats_service",
+            params={"db": db, "chat_id": chat_id},
+            not_found_message="Chat not found"
+        )
+
+        self._http_service.request_validation_service.validate_action_authorization(user.user_id, chat_resource.user_id)
+
+        chat_history = await  self._agents_service.get_agent_chat_history(db=db, chat_id=chat_id)
+        redis_service: RedisService = Container.resolve("redis_service")
+        state: State =  {
+            
+        }
+
+        final_state: State = await graph.ainvoke(state)
+
+        human_message = final_state["input"]
+        ai_message = final_state["final_code"]
+
+        messages_service: MessagesService = Container.resolve("messages_service")
+        background_tasks.add_task(messages_service.handle_messages, db, redis_service, chat_id, human_message, ai_message)
+        
+        return { "data": final_state["final_code"]}
 
     @staticmethod
     def __to_public(agent: Agent) -> AgentPublic:

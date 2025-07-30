@@ -1,9 +1,13 @@
 from src.api.modules.agents.agents_models import Agent, AgentCreate, AgentPublic, AgentUpdate
+from src.api.modules.chats.messages.messages_service import MessagesService
+from src.api.modules.chats.messages.messages_models import Message
 from src.api.core.repository.base_repository import BaseRepository
+from src.dependencies.container import Container
 from src.api.core.logs.logger import Logger
 from typing import Dict, Any, List
 from sqlalchemy.orm import Session
 from uuid import UUID
+from src.api.core.services.redis_service import RedisService
 from src.api.core.decorators.service_error_handler import service_error_handler
 
 class AgentsService():
@@ -42,3 +46,26 @@ class AgentsService():
     @service_error_handler(module=_MODULE)
     def delete(self, db: Session, agent_id: UUID)-> Agent:
         return self._repository.delete(db=db, key="agent_id", value=agent_id)
+
+
+    @service_error_handler("llm_service.chat_history")
+    async def get_agent_chat_history(self, db: Session, chat_id: UUID, num_of_messages: int = 12) -> List[Message]:
+        redis_service: RedisService = Container.resolve("redis_service")
+        session_key = redis_service.get_chat_history_key(chat_id=chat_id)
+    
+        session_data = await redis_service.get_session(session_key)
+        
+        if session_data:
+            chat_history = session_data.get("chat_history", [])
+        else:
+            messages_service: MessagesService = Container.resolve("messages_service")
+            chat_history: List[Message] = messages_service.collection(db=db, chat_id=chat_id)[:num_of_messages]
+           
+            await redis_service.set_session(session_key, {
+                "chat_history": chat_history
+            }, expire_seconds=7200)  # 2 hours
+
+        if len(chat_history) != 0:
+            return chat_history
+        
+        return None

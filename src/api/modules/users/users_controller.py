@@ -1,6 +1,6 @@
 from src.api.modules.users.users_service import UsersService
 from src.api.modules.users.users_models import UserCreate, User, UserUpdate, UserLogin, UserPublic, LoginResponse
-from src.api.core.models.http_reposnses import GeneralResponse
+from src.api.core.models.http_responses import GeneralResponse
 from fastapi import Request, HTTPException
 from src.api.core.services.http_service import HttpService
 from sqlalchemy.orm import Session

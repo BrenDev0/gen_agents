@@ -4,7 +4,7 @@ from src.api.core.middleware.auth_middleware import auth_middleware
 from src.api.core.middleware.verified_middleware import verified_middleware
 from src.api.modules.users.users_controller import UsersController
 from src.api.modules.users.users_models import UserCreate, UserUpdate, UserLogin, UserPublic, LoginResponse
-from src.api.core.models.http_reposnses import GeneralResponse
+from src.api.core.models.http_responses import GeneralResponse
 from sqlalchemy.orm import Session
 from src.api.core.database.sessions import get_db_session
 from src.api.core.middleware.middleware_service import security
