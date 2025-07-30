@@ -9,6 +9,8 @@ from src.api.core.models.http_responses import GeneralResponse
 from src.api.modules.agents.agents_controller import AgentsController
 import uuid
 from src.api.core.middleware.middleware_service import security
+from src.agent.graph import create_graph
+from langchain_openai import ChatOpenAI
 
 
 router = APIRouter(
@@ -21,6 +23,14 @@ def get_controller():
     return Container.resolve("agents_controller")
 
 
+def get_graph():
+    llm = ChatOpenAI(
+        model="gpt-4o",
+        temperature=0.5
+    )
+    return create_graph(llm=llm)
+
+
 @router.post("/secure/create", status_code=201, response_model=GeneralResponse)
 def secure_create(
     requset: Request,
@@ -30,6 +40,7 @@ def secure_create(
     data: AgentCreate = Body(...)
 ):
     return controller.create_request(requset=requset, db=db, data=data)
+
 
 @router.get("/secure/resource/{agent_id}", status_code=200, response_model=AgentPublic)
 def secure_resource(
@@ -41,6 +52,7 @@ def secure_resource(
 ):
     return controller.resource_request(request=request, db=db, agent_id=agent_id)
 
+
 @router.get("/secure/collection", status_code=200, response_model=List[AgentPublic])
 def secure_collection(
     request: Request,
@@ -49,6 +61,7 @@ def secure_collection(
     controller: AgentsController = Depends(get_controller)
 ):
     return controller.collection_request(request=request, db=db)
+
 
 @router.put("/secure/{agent_id}", status_code=200, response_model=GeneralResponse)
 def secure_update(
@@ -60,6 +73,7 @@ def secure_update(
     data: AgentUpdate = Body(...)
 ):
     return controller.update_request(request=request, db=db, data=data, agent_id=agent_id)
+
 
 @router.delete("/secure/{agent_id}", status_code=200, response_model=GeneralResponse)
 def secure_delete(
