@@ -27,6 +27,11 @@ def verified_create(
     controller: UsersController = Depends(get_controller)
     
 ):
+    """
+    ## Create user 
+
+    # this endpoint creates a user a verification codemust be passed from users email
+    """
     return controller.create_request(request=request, db=db, data=data)
 
 @router.get("/secure/resource", status_code=200, response_model=UserPublic, dependencies=[Depends(security)])
@@ -36,6 +41,11 @@ def secure_resource(
     db: Session = Depends(get_db_session),
     controller: UsersController = Depends(get_controller)
 ):
+    """
+    ## Resource request
+
+    # this endpoint gets the current user
+    """
     return controller.resource_request(request=request)
 
 @router.put("/secure/update", status_code=200, dependencies=[Depends(security)], response_model=GeneralResponse)
@@ -46,6 +56,12 @@ def secure_update(
     db: Session = Depends(get_db_session),
     controller: UsersController = Depends(get_controller)
 ):
+    
+    """
+    ## Update request
+
+    # this endpoint updates the current users password
+    """
     return controller.update_request(request=request, db=db, data=data)
 
 @router.delete("/secure/delete", status_code=200, dependencies=[Depends(security)], response_model=GeneralResponse)
@@ -55,6 +71,11 @@ def secure_delete(
     db: Session = Depends(get_db_session),
     controller: UsersController = Depends(get_controller)
 ):
+    """
+    ## Delete request
+
+    # Deletes the current user
+    """
     return controller.delete_request(request=request, db=db)
 
 @router.post("/login", status_code=200, response_model=LoginResponse)
@@ -64,4 +85,7 @@ def login(
     db: Session = Depends(get_db_session),
     controller: UsersController = Depends(get_controller)
 ):
+    """
+    ## User login
+    """
     return controller.login(request=request, db=db, data=data)

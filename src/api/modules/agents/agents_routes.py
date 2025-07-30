@@ -39,6 +39,13 @@ def secure_create(
     controller: AgentsController = Depends(get_controller),
     data: AgentCreate = Body(...)
 ):
+    """
+    ## create request 
+
+    # this endpoint creates an agent in the db
+    **Required fields** - agentName
+    **Optional fields** - agentDescription
+    """
     return controller.create_request(requset=requset, db=db, data=data)
 
 
@@ -50,6 +57,11 @@ def secure_resource(
     db: Session = Depends(get_db_session),
     controller: AgentsController = Depends(get_controller)
 ):
+    """
+    ## Resource request 
+
+    # this endpoint gets a single agent from the db by agentId in the params
+    """
     return controller.resource_request(request=request, db=db, agent_id=agent_id)
 
 
@@ -60,6 +72,11 @@ def secure_collection(
     db: Session = Depends(get_db_session),
     controller: AgentsController = Depends(get_controller)
 ):
+    """
+    ## Collection request 
+
+    # this endpoint returns a collection of agents based on the user id passed in the token   
+    """
     return controller.collection_request(request=request, db=db)
 
 
@@ -72,6 +89,11 @@ def secure_update(
     controller: AgentsController = Depends(get_controller),
     data: AgentUpdate = Body(...)
 ):
+    """
+    ## Update request
+
+    # this endpoint updates the agents name or description
+    """
     return controller.update_request(request=request, db=db, data=data, agent_id=agent_id)
 
 
@@ -83,6 +105,11 @@ def secure_delete(
     db: Session = Depends(get_db_session),
     controller: AgentsController = Depends(get_controller)
 ):
+    """
+    ## Delete request
+
+    # this endpoint deletes an agent by id
+    """
     return controller.delete_request(request=request, db=db, agent_id=agent_id)
     
 
