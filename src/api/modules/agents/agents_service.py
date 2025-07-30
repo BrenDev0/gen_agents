@@ -14,11 +14,11 @@ class AgentsService():
 
     @service_error_handler(module=_MODULE)
     def create(self, db: Session,  agent: List[Dict], user_id: UUID) -> Agent:
-        new_agent = AgentCreate(
+        new_agent = Agent(
             **agent,
-            _user_id = user_id
+            user_id = user_id
         )
-        return self._repository.create(db=db, data=Agent(**new_agent.model_dump(by_alias=False)))
+        return self._repository.create(db=db, data=new_agent)
 
     @service_error_handler(module=_MODULE)
     def resource(self, db: Session, agent_id: UUID) -> Agent | None:

@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict, PrivateAttr
+from pydantic.alias_generators import to_camel, to_snake
 from sqlalchemy import Column, String
 from sqlalchemy.dialects.postgresql import UUID
 from src.api.core.database.db_models import Base 
@@ -7,31 +8,49 @@ import uuid
 
 class UserCreate(BaseModel):
     email: EmailStr
+    _email_hash: str = PrivateAttr()
     password: str
     code: int
-
-
+    model_config = ConfigDict(
+        populate_by_name=True,
+        from_attributes=True,
+        serialize_by_alias=True,
+        alias_generator=to_camel,
+        schema_generator=to_camel
+    )
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
+class LoginResponse(BaseModel):
+    token: str
+
 class UserUpdate(BaseModel):
-    newPassword: str
-    oldPassword: str
+    new_password: str
+    old_password: str
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        from_attributes=True,
+        serialize_by_alias=True,
+        alias_generator=to_camel,
+        schema_generator=to_camel
+    )
 
 class UserPublic(BaseModel):
-    userId: str
+    user_id: str
     email: EmailStr
 
-class UserPrivate(BaseModel):
-    email: EmailStr
-    email_hash: str
-    password: str
-    code: int
+    model_config = ConfigDict(
+        populate_by_name=True,
+        from_attributes=True,
+        serialize_by_alias=True,
+        alias_generator=to_camel,
+        schema_generator=to_camel
+    )
     
-
-
+    
 class User(Base):
     __tablename__ = "users"
 

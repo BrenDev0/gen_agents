@@ -1,4 +1,3 @@
-from sqlalchemy.orm import Session
 from src.dependencies.container import Container
 from src.api.core.repository.base_repository import BaseRepository
 from src.api.core.logs.logger import Logger

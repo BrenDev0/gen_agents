@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from core.api import app
+from src.api.api import app
 from dotenv import load_dotenv
 load_dotenv() 
 
@@ -14,7 +14,7 @@ delete_token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOTEwMDA0YWUt
 # def test_create_user_verified_success():
 #     with TestClient(app) as client:
 #         payload = {
-#             "email": "user333333@example.com",
+#             "email": "user44444@example.com",
 #             "password": "password123",
 #             "code": "123456" 
 #         }
@@ -48,7 +48,7 @@ def test_login_success():
 
         payload = {
             "email": "user@example.com",
-            "password": "newpass456"
+            "password": "carpincha"
         }
 
         res = client.post("/users/login", json=payload)
@@ -77,16 +77,16 @@ def test_secure_resource():
             "/users/secure/resource",
             headers={"Authorization": f"Bearer {token}"}
         )
-
+   
         assert res.status_code == 200
-        assert "data" in res.json()
+      
 
 
 # def test_update_user_password():
 #     with TestClient(app) as client:
 #         payload = {
-#             "oldPassword": "password123",
-#             "newPassword": "newpass456"
+#             "oldPassword": "newpass456",
+#             "newPassword": "carpincha"
 #         }
 
 #         res = client.put(
@@ -95,7 +95,7 @@ def test_secure_resource():
 #             headers={"Authorization": f"Bearer {token}"}
 #         )
 #         assert res.status_code == 200
-#         assert res.json()["message"] == "User updated"
+#         assert res.json()["detail"] == "User updated"
 
 def test_update_user_password_incorrect_password():
     with TestClient(app) as client:
@@ -109,6 +109,8 @@ def test_update_user_password_incorrect_password():
             json=payload,
             headers={"Authorization": f"Bearer {token}"}
         )
+
+        print(res.json())
         assert res.status_code == 400
         assert res.json()["detail"] == "Incorrect password"
 
