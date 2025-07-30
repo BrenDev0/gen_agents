@@ -43,8 +43,8 @@ def secure_create(
     ## Create request 
 
     this endpoint creates an agent in the db
-    **Required fields** - agentName
-    **Optional fields** - agentDescription
+    - **Required fields** - agentName
+    - **Optional fields** - agentDescription
     """
     return controller.create_request(requset=requset, db=db, data=data)
 
