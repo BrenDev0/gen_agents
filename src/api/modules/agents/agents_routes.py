@@ -40,7 +40,7 @@ def secure_create(
     data: AgentCreate = Body(...)
 ):
     """
-    ## create request 
+    ## Create request 
 
     this endpoint creates an agent in the db
     **Required fields** - agentName
