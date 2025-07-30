@@ -28,9 +28,9 @@ class AgentsController:
         user: User = request.state.user
 
         agent_resource: AgentPublic =  self._http_service.request_validation_service.verify_resource(
-            "agents_service",
-            {"db": db, "agent_id": agent_id},
-            "Agent not found"
+            service_key="agents_service",
+            params={"db": db, "agent_id": agent_id},
+            not_found_message="Agent not found"
         )
 
         self._http_service.request_validation_service.validate_action_authorization(user.user_id, agent_resource.user_id)
@@ -50,9 +50,9 @@ class AgentsController:
         user: User = request.state.user
 
         agent_resource: AgentPublic =  self._http_service.request_validation_service.verify_resource(
-            "agents_service",
-            {"db": db, "agent_id": agent_id},
-            "Agent not found"
+            service_key="agents_service",
+            params={"db": db, "agent_id": agent_id},
+            not_found_message="Agent not found"
         )
 
         self._http_service.request_validation_service.validate_action_authorization(user.user_id, agent_resource.user_id)
@@ -68,9 +68,9 @@ class AgentsController:
         user: User = request.state.user
 
         agent_resource: AgentPublic =  self._http_service.request_validation_service.verify_resource(
-            "agents_service",
-            {"db": db, "agent_id": agent_id},
-            "Agent not found"
+            service_key="agents_service",
+            params={"db": db, "agent_id": agent_id},
+            not_found_message="Agent not found"
         )
 
         self._http_service.request_validation_service.validate_action_authorization(user.user_id, agent_resource.user_id)
