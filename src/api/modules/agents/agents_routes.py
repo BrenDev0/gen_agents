@@ -34,10 +34,10 @@ def get_graph():
 @router.post("/secure/create", status_code=201, response_model=GeneralResponse)
 def secure_create(
     request: Request,
+    data: AgentCreate = Body(...),
     _=Depends(auth_middleware),
     db: Session = Depends(get_db_session),
-    controller: AgentsController = Depends(get_controller),
-    data: AgentCreate = Body(...)
+    controller: AgentsController = Depends(get_controller)
 ):
     """
     ## Create request 
@@ -84,10 +84,10 @@ def secure_collection(
 def secure_update(
     agent_id: uuid.UUID,
     request: Request,
+    data: AgentUpdate = Body(...),
     _=Depends(auth_middleware),
     db: Session = Depends(get_db_session),
-    controller: AgentsController = Depends(get_controller),
-    data: AgentUpdate = Body(...)
+    controller: AgentsController = Depends(get_controller)
 ):
     """
     ## Update request
