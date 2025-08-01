@@ -46,7 +46,7 @@ def secure_create(
     - **Required fields** - agentName
     - **Optional fields** - agentDescription
     """
-    return controller.create_request(requset=request, db=db, data=data)
+    return controller.create_request(request=request, db=db, data=data)
 
 
 @router.get("/secure/resource/{agent_id}", status_code=200, response_model=AgentPublic)
