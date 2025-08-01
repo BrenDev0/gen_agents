@@ -29,7 +29,7 @@ class AgentBase(BaseModel):
     )
 
 class AgentCreate(AgentBase):
-    _user_id: Optional[uuid.UUID] = PrivateAttr()
+    pass
 
 class AgentPublic(AgentBase):
     agent_id: uuid.UUID
