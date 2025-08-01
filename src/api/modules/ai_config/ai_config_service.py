@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from src.api.core.repository.base_repository import BaseRepository
 from src.api.core.logs.logger import Logger 
-from src.api.modules.ai_config.ai_config_models import AIConfig, AiConfigBase, AiConfigUpdate
+from src.api.modules.ai_config.ai_config_models import AIConfig, AiConfigCreate, AiConfigUpdate
 from src.api.core.decorators.service_error_handler import service_error_handler
 from uuid import UUID
 
@@ -12,7 +12,7 @@ class AiConfigService:
         self._repository = repository
 
     @service_error_handler(module=_MODULE)
-    def create(self, db: Session, ai_config: AiConfigBase) -> AIConfig:
+    def create(self, db: Session, ai_config: AiConfigCreate) -> AIConfig:
         return self._repository.create(db=db, data=AIConfig(**ai_config.model_dump(by_alias=False, exclude_unset=True)))
 
     @service_error_handler(module=_MODULE)

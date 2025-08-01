@@ -21,6 +21,9 @@ class AiConfigBase(BaseModel):
         alias_generator=to_camel
     )
 
+class AiConfigCreate(AiConfigBase):
+    pass
+
 class AiConfigPublic(AiConfigBase):
     ai_config_id: uuid.UUID
     api_key: str = Field(exclude=True)
