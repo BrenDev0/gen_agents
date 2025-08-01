@@ -41,14 +41,14 @@ class AgentsService():
     
     @service_error_handler(module=_MODULE)
     def update(self, db: Session, agent_id: UUID, changes: AgentUpdate) -> Agent:
-        return self._repository.update(db=db, key="agent_id", value=agent_id, changes=changes.model_dump(by_alias=False))
+        return self._repository.update(db=db, key="agent_id", value=agent_id, changes=changes.model_dump(by_alias=False, exclude_unset=True))
 
     @service_error_handler(module=_MODULE)
     def delete(self, db: Session, agent_id: UUID)-> Agent:
         return self._repository.delete(db=db, key="agent_id", value=agent_id)
 
 
-    @service_error_handler("llm_service.chat_history")
+    @service_error_handler(module=_MODULE)
     async def get_agent_chat_history(self, db: Session, chat_id: UUID, num_of_messages: int = 12) -> List[Message]:
         redis_service: RedisService = Container.resolve("redis_service")
         session_key = redis_service.get_chat_history_key(chat_id=chat_id)

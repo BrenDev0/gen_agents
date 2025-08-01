@@ -26,7 +26,7 @@ class UsersService():
     def resource(self, db: Session, where_col: str, identifier: str | UUID) -> User | None:
         return self._repository.get_one(db=db, key=where_col, value=identifier)
 
-    @service_error_handler("users.service")
+    @service_error_handler(module=_MODULE)
     def update(self, db: Session, user_id: UUID, changes: UserUpdate) -> User:
         return self._repository.update(db, key="user_id", value=user_id, changes=changes)
 

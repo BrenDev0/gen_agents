@@ -1,0 +1,2 @@
+class AiConfigController:
+    pass
