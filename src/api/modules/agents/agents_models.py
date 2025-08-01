@@ -8,7 +8,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 
 class InteractionRequest(BaseModel):
-    conversationi_id: str
+    input: str
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -17,18 +17,10 @@ class InteractionRequest(BaseModel):
         alias_generator=to_camel
     )
 
-
-class LLMConfig(BaseModel):
-    prompt: str
-    tools: List[Any]
-    max_tokens: int
-    temperature: float
-
-class AgentCreate(BaseModel):
-    _user_id: Optional[uuid.UUID] = PrivateAttr()
+class AgentBase(BaseModel):
     agent_name: str
     agent_description: Optional[str]
-
+    
     model_config = ConfigDict(
         populate_by_name=True,
         from_attributes=True,
@@ -36,18 +28,13 @@ class AgentCreate(BaseModel):
         alias_generator=to_camel
     )
 
-class AgentPublic(BaseModel):
+class AgentCreate(AgentBase):
+    _user_id: Optional[uuid.UUID] = PrivateAttr()
+
+class AgentPublic(AgentBase):
     agent_id: uuid.UUID
     user_id: uuid.UUID
-    agent_name: str
-    agent_description: Optional[str]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        from_attributes=True,
-        serialize_by_alias=True,
-        alias_generator=to_camel
-    )
 
 class AgentUpdate(BaseModel):
     agent_name: Optional[str]
