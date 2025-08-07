@@ -29,4 +29,4 @@ async def classify_intent(llm: ChatOpenAI, state: State) -> Dict:
     
     state["intent"] = intent
     
-    return state
+    return state.ven
