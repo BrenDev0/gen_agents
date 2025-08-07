@@ -13,6 +13,7 @@ from src.api.modules.chats.chats_dependencies import configure_chats_dependencie
 from src.api.modules.chats.messages.messages_dependencies import configure_messages_dependencies
 from src.api.modules.users.user_dependencies import configure_users_dependencies
 from src.api.modules.agents.agents_dependencies import configure_agents_dependencies
+from src.agent.services.appointments_service import AppoinmentsService
 
 def configure_container():
     ## core ##
@@ -61,6 +62,12 @@ def configure_container():
         redis_service=redis_service
     )
     Container.register("prompts_service", prompts_service)
+
+    appointments_service = AppoinmentsService(
+        prompt_service=prompts_service
+    )
+
+    Container.register("appointments_service", appointments_service)
 
     ## Modules ## Must configure core instances above this line ##
 

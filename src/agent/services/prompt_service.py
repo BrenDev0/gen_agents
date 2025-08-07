@@ -5,6 +5,7 @@ from src.api.core.services.redis_service import RedisService
 from src.agent.services.embedding_service import EmbeddingService
 from src.agent.state import State
 from  datetime import datetime
+
 class PromptService:
     def __init__(self, embedding_service: EmbeddingService, redis_service: RedisService):
         self.embedding_service = embedding_service
@@ -15,11 +16,12 @@ class PromptService:
         state: State
     ):
         system_message = """
-            Classify the user's intent and determine their language. Intent options: "general_query", "appointment", "human".
+            Classify the user's intent and determine their language. Intent options: "general_query", "new_appointment", cancel_appointment, "human".
             Use the context of the conversation to guide your decision:
             - "general_query" is for all types of questions and information.
             - If the user expresses any interest in speaking to a human representative, the intent will be "human".
-            - If the user wants to book an appointment, the intent will be "appointment".
+            - If the user wants to book an appointment, the intent will be "new_appointment".
+            - if the user wants to cancel an appointment, the intent will be "cancel_appointment".
             Your response should always be like the example below:
             {
                 "language": "spanish",
@@ -33,9 +35,8 @@ class PromptService:
             SystemMessage(content=system_message),
         ]
 
-        chat_history = state.get("chat_history", [])
-        if chat_history:
-            messages = self.add_chat_history(chat_history, messages)
+       
+        messages = self.add_chat_history(state, messages)
         
         messages.append(HumanMessagePromptTemplate.from_template('{input}'))
 
@@ -60,18 +61,16 @@ class PromptService:
         )
  
         if context:
-            print(context)
             messages.append(SystemMessage(content=f"""
-                You have access to the following relevant context retrieved from documents. Use this information to inform your response. Do not make up facts outside of this context.
+                You have access to the following relevant context retrieved from documents.
+                Use this information to inform your response. Do not make up facts outside of this context.
 
                 Relevant context:
                 {context}
             """))
 
-        chat_history = state.get("chat_history", [])
         
-        if chat_history:
-            messages = self.add_chat_history(chat_history, messages)
+        messages = self.add_chat_history(state, messages)
         
         messages.append(HumanMessagePromptTemplate.from_template('{input}'))
 
@@ -89,25 +88,25 @@ class PromptService:
                 - email
                 - phone
                 - appointment_datetime
-
+               
                 Do not ask for any information.
                 Respond only in this format:
+                
                 {{
                 "name": "...",
                 "email": "...",
                 "phone": "...",
                 "appointment_datetime": "..."
                 }}
+                
                 If anything is missing, return null for that field.
                 Any datetimes given should be converted to an ISO string
                 the current date is {current_datetime}.
             """)
         ]
     
-        chat_history = state.get("chat_history", [])
         
-        if chat_history:
-            messages = self.add_chat_history(chat_history, messages)
+        messages = self.add_chat_history(state, messages)
 
     
         messages.append(HumanMessagePromptTemplate.from_template('{input}'))
@@ -116,13 +115,31 @@ class PromptService:
         
         return prompt
 
+    def custom_prompt_template(self, state: State, system_message: str):
+        messages = [
+            SystemMessage(content=system_message)
+        ]
+
+        messages = self.add_chat_history(state, messages)
+
+        messages.append(HumanMessagePromptTemplate.from_template('{input}'))
+
+        prompt = ChatPromptTemplate.from_messages(messages)
+
+        return prompt
+
+
+
     @staticmethod
-    def add_chat_history(chat_history: List[Dict], messages: List[Any]) -> List[Any]:
-        for msg in chat_history:
-            if msg["sender"] == "client":
-                messages.append(HumanMessage(content=msg["text"]))
-            elif msg["sender"] == "agent":
-                messages.append(AIMessage(content=msg["text"]))
+    def add_chat_history(state: State, messages: List[Any]) -> List[Any]:
+
+        chat_history = state.get("chat_history", [])
+        if chat_history:
+            for msg in chat_history:
+                if msg["sender"] == "client":
+                    messages.append(HumanMessage(content=msg["text"]))
+                elif msg["sender"] == "agent":
+                    messages.append(AIMessage(content=msg["text"]))
 
         return messages
     
