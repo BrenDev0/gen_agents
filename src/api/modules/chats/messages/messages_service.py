@@ -61,11 +61,11 @@ class MessagesService():
         session = await redis_service.get_session(session_key)
         chat_history = session.get("chat_history", [])
 
-        chat_history.insert(0, outgoing_message.model_dump(exclude="chat_id"))
+        chat_history.insert(0, incoming_message.model_dump(exclude="chat_id"))
         if len(chat_history) > num_of_messages:
             chat_history.pop()  
 
-        chat_history.insert(0, incoming_message.model_dump(exclude="chat_id"))
+        chat_history.insert(0, outgoing_message.model_dump(exclude="chat_id"))
         if len(chat_history) > num_of_messages:
             chat_history.pop()  
         
