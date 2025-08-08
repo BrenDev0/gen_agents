@@ -110,12 +110,12 @@ class AgentsController:
         final_state: State = await graph.ainvoke(state)
 
         human_message = final_state["input"]
-        ai_message = final_state["final_code"]
+        ai_message = final_state["response"]
 
         messages_service: MessagesService = Container.resolve("messages_service")
         background_tasks.add_task(messages_service.handle_messages, db, chat_id, human_message, ai_message)
         
-        return { "data": final_state["final_code"]}
+        return { "data": final_state["response"]}
 
     @staticmethod
     def __to_public(agent: Agent) -> AgentPublic:
