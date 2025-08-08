@@ -32,15 +32,12 @@ class StateService:
     
         session_data = await self._redis_service.get_session(session_key)
         
-        if session_data:
-            chat_history = session_data.get("chat_history", [])
-        else:
-            chat_history: List[Message] = self._messages_service.collection(db=db, chat_id=chat_id)[:num_of_messages]
-
-        if len(chat_history) != 0:
-            return chat_history
+        if session_data and session_data.get("chat_history"):
+            return session_data["chat_history"][:num_of_messages]
         
-        return None
+        
+        chat_history = self._messages_service.collection(db=db, chat_id=chat_id)
+        return chat_history[:num_of_messages] if chat_history else []
     
     @service_error_handler(module=_MODULE)
     async def __get_ai_config(self, db: Session, agent_id: UUID):
