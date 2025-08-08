@@ -8,6 +8,8 @@ from uuid import UUID
 from src.api.core.decorators.service_error_handler import service_error_handler
 from operator import attrgetter
 from src.api.core.services.redis_service import RedisService
+from src.dependencies.container import Container
+
 
 class MessagesService():
     _MODULE = "messages.service"
@@ -41,7 +43,8 @@ class MessagesService():
     def delete(self, db: Session, message_id: UUID)-> Message:
         return self._repository.delete(db=db, key="message_id", value=message_id)
     
-    async def handle_messages(self, db: Session, redis_service: RedisService, chat_id: UUID, human_message: str, ai_message: str, num_of_messages: int = 12): 
+    async def handle_messages(self, db: Session, chat_id: UUID, human_message: str, ai_message: str, num_of_messages: int = 12): 
+        redis_service: RedisService = Container.resolve("redis_service")
         incoming_message = MessageCreate(
             chat_id=chat_id,
             sender="human",
@@ -54,7 +57,7 @@ class MessagesService():
             text=ai_message
         )
 
-        session_key = redis_service.get_chat_history_key(chat_id=chat_id)
+        session_key = redis_service.get_agent_state_key(chat_id=chat_id)
         session = await redis_service.get_session(session_key)
         chat_history = session.get("chat_history", [])
 

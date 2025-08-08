@@ -3,6 +3,7 @@ import json
 from typing import Any, Optional
 import os
 from dotenv import load_dotenv
+from uuid import UUID
 load_dotenv()
 
 class RedisService:
@@ -18,3 +19,6 @@ class RedisService:
 
     async def delete_session(self, key: str) -> bool:
         return await self.redis.delete(key) > 0
+    
+    async def get_agent_state_key(chat_id: UUID):
+        return f"agent_state:{chat_id}"

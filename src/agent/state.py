@@ -15,10 +15,7 @@ class State(TypedDict):
     max_tokens: int
     temperature: float
     input: str
-    user_id: str
-    agent_id: str
-    conversation_id: str
-    token: str
+    chat_id: str
     appointments_state: AppointmentState
     response: Optional[str]
     intent: Optional[str] 

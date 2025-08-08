@@ -92,9 +92,9 @@ class AgentsController:
         self, 
         request: Request, 
         db: Session, 
+        state: State,
         graph, 
         chat_id: uuid.UUID, 
-        data: InteractionRequest, 
         background_tasks: BackgroundTasks
     ):
         user: User = request.state.user
@@ -107,19 +107,13 @@ class AgentsController:
 
         self._http_service.request_validation_service.validate_action_authorization(user.user_id, chat_resource.user_id)
 
-        chat_history = await  self._agents_service.get_agent_chat_history(db=db, chat_id=chat_id)
-        redis_service: RedisService = Container.resolve("redis_service")
-        state: State =  {
-            
-        }
-
         final_state: State = await graph.ainvoke(state)
 
         human_message = final_state["input"]
         ai_message = final_state["final_code"]
 
         messages_service: MessagesService = Container.resolve("messages_service")
-        background_tasks.add_task(messages_service.handle_messages, db, redis_service, chat_id, human_message, ai_message)
+        background_tasks.add_task(messages_service.handle_messages, db, chat_id, human_message, ai_message)
         
         return { "data": final_state["final_code"]}
 
